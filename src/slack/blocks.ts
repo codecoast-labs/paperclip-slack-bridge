@@ -1,5 +1,5 @@
 import type { KnownBlock } from "@slack/types";
-import type { ActivityLog, Approval, Agent, CostSummary } from "../paperclip/types.js";
+import type { ActivityLog, Approval, Agent, CostSummary, CostByAgent } from "../paperclip/types.js";
 
 export function issueStatusBlock(
   activity: ActivityLog,
@@ -171,19 +171,42 @@ export function agentStatusBlock(agents: Agent[]): KnownBlock[] {
   ];
 }
 
-export function costSummaryBlock(summary: CostSummary): KnownBlock[] {
-  const lines = [`*Total:* $${summary.totalCost.toFixed(2)}`];
-  if (summary.byAgent?.length) {
+export function costSummaryBlock(
+  summary: CostSummary,
+  byAgent: CostByAgent[]
+): KnownBlock[] {
+  const spendDollars = (summary.spendCents / 100).toFixed(2);
+  const budgetDollars =
+    summary.budgetCents > 0
+      ? `$${(summary.budgetCents / 100).toFixed(2)}`
+      : "Unlimited";
+
+  const lines = [
+    `*Total spend:* $${spendDollars}`,
+    `*Budget:* ${budgetDollars}`,
+  ];
+
+  if (byAgent.length) {
     lines.push("");
-    for (const entry of summary.byAgent.slice(0, 10)) {
-      lines.push(`  ${entry.agentName}: $${entry.cost.toFixed(4)}`);
+    for (const entry of byAgent.slice(0, 10)) {
+      const cost =
+        entry.costCents > 0 ? `$${(entry.costCents / 100).toFixed(2)}` : "$0";
+      const tokens = (
+        entry.inputTokens +
+        entry.cachedInputTokens +
+        entry.outputTokens
+      ).toLocaleString();
+      lines.push(`  ${entry.agentName}: ${cost} (${tokens} tokens)`);
     }
   }
 
   return [
     {
       type: "section",
-      text: { type: "mrkdwn", text: `:money_with_wings: *Cost Summary*\n${lines.join("\n")}` },
+      text: {
+        type: "mrkdwn",
+        text: `:money_with_wings: *Cost Summary*\n${lines.join("\n")}`,
+      },
     },
   ];
 }

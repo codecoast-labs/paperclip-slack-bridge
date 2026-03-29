@@ -50,11 +50,18 @@ export interface Approval {
 }
 
 export interface CostSummary {
-  totalCost: number;
-  byAgent: Array<{
-    agentId: string;
-    agentName: string;
-    cost: number;
-  }>;
-  [key: string]: unknown;
+  companyId: string;
+  spendCents: number;
+  budgetCents: number;
+  utilizationPercent: number;
+}
+
+export interface CostByAgent {
+  agentId: string;
+  agentName: string;
+  agentStatus: string;
+  costCents: number;
+  inputTokens: number;
+  cachedInputTokens: number;
+  outputTokens: number;
 }

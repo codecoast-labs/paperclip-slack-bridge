@@ -1,21 +1,13 @@
 {
-  "default": "#agent-updates",
+  "default": "#pc-agent-updates",
   "routes": [
     {
       "match": { "action": "approval.created" },
-      "channel": "#approvals"
+      "channel": "#pc-approvals"
     },
     {
       "match": { "action": "approval.resubmitted" },
-      "channel": "#approvals"
-    },
-    {
-      "match": { "action": "budget.warning" },
-      "channel": "#cost-alerts"
-    },
-    {
-      "match": { "action": "budget.exhausted" },
-      "channel": "#cost-alerts"
+      "channel": "#pc-approvals"
     }
   ]
 }

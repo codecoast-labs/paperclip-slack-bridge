@@ -19,11 +19,12 @@ export function parseFlags(text: string): { title: string; flags: Record<string,
 export function registerCommands(app: App, client: PaperclipClient): void {
   // /pc-task "Fix login bug" --assign CTO --project "Website"
   app.command("/pc-task", async ({ command, ack, respond }) => {
+    console.log(`[cmd] /pc-task: "${command.text}"`);
     await ack();
 
     const { title, flags } = parseFlags(command.text);
     if (!title) {
-      await respond({ text: "Usage: `/pc-task \"Title\" [--assign agent] [--project name]`", response_type: "ephemeral" });
+      await respond({ text: "Usage: `/pc-task \"Title\" [--assign agent] [--project name] [--description \"details\"]`", response_type: "ephemeral" });
       return;
     }
 
@@ -57,6 +58,7 @@ export function registerCommands(app: App, client: PaperclipClient): void {
 
   // /pc-status [agent]
   app.command("/pc-status", async ({ command, ack, respond }) => {
+    console.log(`[cmd] /pc-status: "${command.text}"`);
     await ack();
 
     try {
@@ -84,13 +86,17 @@ export function registerCommands(app: App, client: PaperclipClient): void {
 
   // /pc-costs
   app.command("/pc-costs", async ({ ack, respond }) => {
+    console.log("[cmd] /pc-costs");
     await ack();
 
     try {
-      const summary = await client.getCostsSummary();
+      const [summary, byAgent] = await Promise.all([
+        client.getCostsSummary(),
+        client.getCostsByAgent(),
+      ]);
       await respond({
-        blocks: costSummaryBlock(summary),
-        text: `Cost summary: $${summary.totalCost.toFixed(2)}`,
+        blocks: costSummaryBlock(summary, byAgent),
+        text: `Cost summary: $${(summary.spendCents / 100).toFixed(2)}`,
         response_type: "ephemeral",
       });
     } catch (err) {

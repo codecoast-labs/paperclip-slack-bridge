@@ -17,6 +17,10 @@ export function createSlackApp(
     socketMode: true,
   });
 
+  app.error(async (error) => {
+    console.error("Bolt error:", error);
+  });
+
   registerCommands(app, client);
   registerActions(app, client);
   registerThreadHandler(app, client, store);

@@ -9,7 +9,7 @@ import {
   agentStatusBlock,
   costSummaryBlock,
 } from "../src/slack/blocks.js";
-import type { ActivityLog, Approval, Agent, CostSummary } from "../src/paperclip/types.js";
+import type { ActivityLog, Approval, Agent, CostSummary, CostByAgent } from "../src/paperclip/types.js";
 
 function makeActivity(overrides: Partial<ActivityLog> = {}): ActivityLog {
   return {
@@ -212,18 +212,22 @@ describe("Block Kit builders", () => {
   describe("costSummaryBlock", () => {
     it("renders total and per-agent costs", () => {
       const summary: CostSummary = {
-        totalCost: 12.34,
-        byAgent: [
-          { agentId: "1", agentName: "CTO", cost: 8.5 },
-          { agentId: "2", agentName: "Dev", cost: 3.84 },
-        ],
+        companyId: "co-1",
+        spendCents: 1234,
+        budgetCents: 5000,
+        utilizationPercent: 24,
       };
+      const byAgent: CostByAgent[] = [
+        { agentId: "1", agentName: "CTO", agentStatus: "active", costCents: 850, inputTokens: 100, cachedInputTokens: 5000, outputTokens: 2000 },
+        { agentId: "2", agentName: "Dev", agentStatus: "idle", costCents: 384, inputTokens: 50, cachedInputTokens: 1000, outputTokens: 500 },
+      ];
 
-      const blocks = costSummaryBlock(summary);
+      const blocks = costSummaryBlock(summary, byAgent);
       const text = (blocks[0] as any).text.text as string;
       assert.ok(text.includes("$12.34"));
+      assert.ok(text.includes("$50.00"));
       assert.ok(text.includes("CTO"));
-      assert.ok(text.includes("8.5000"));
+      assert.ok(text.includes("$8.50"));
     });
   });
 });

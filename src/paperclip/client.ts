@@ -4,6 +4,7 @@ import type {
   Agent,
   Approval,
   CostSummary,
+  CostByAgent,
   Issue,
 } from "./types.js";
 
@@ -74,8 +75,12 @@ export class PaperclipClient {
     assigneeAgentId?: string;
     projectId?: string;
     description?: string;
+    status?: string;
   }): Promise<Issue> {
-    return this.request<Issue>("POST", this.co("/issues"), data);
+    return this.request<Issue>("POST", this.co("/issues"), {
+      status: "todo",
+      ...data,
+    });
   }
 
   async addComment(
@@ -107,6 +112,10 @@ export class PaperclipClient {
 
   async getCostsSummary(): Promise<CostSummary> {
     return this.request<CostSummary>("GET", this.co("/costs/summary"));
+  }
+
+  async getCostsByAgent(): Promise<CostByAgent[]> {
+    return this.request<CostByAgent[]>("GET", this.co("/costs/by-agent"));
   }
 
   async pauseAgent(agentId: string): Promise<Agent> {
