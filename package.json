@@ -1,0 +1,38 @@
+{
+  "name": "paperclip-slack-bridge",
+  "version": "1.0.0",
+  "description": "Bidirectional bridge between Paperclip and Slack — forwards agent activity to channels, accepts slash commands and threaded replies back",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codecoast-labs/paperclip-slack-bridge.git"
+  },
+  "keywords": [
+    "paperclip",
+    "slack",
+    "bridge",
+    "ai-agents",
+    "socket-mode",
+    "bolt"
+  ],
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "test": "node --import tsx --test tests/**/*.test.ts"
+  },
+  "dependencies": {
+    "@slack/bolt": "^4.1.0",
+    "better-sqlite3": "^11.7.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
